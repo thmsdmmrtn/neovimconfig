@@ -1,14 +1,15 @@
+-- Set leader key early
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 -- Basic Settings
--- vim.opt.compatible = false        -- Not needed in Neovim (always nocompatible)
-vim.cmd('filetype off')          -- Required for plugin management
--- vim.cmd('syntax on')             -- Syntax is enabled by default in Neovim
-vim.opt.number = true            -- Show line numbers
-vim.opt.relativenumber = true    -- Show relative line numbers for easy movement
-vim.opt.ruler = true             -- Show cursor position
-vim.opt.showcmd = true           -- Show incomplete commands
-vim.opt.wildmenu = true          -- Enhanced command-line completion
-vim.opt.encoding = 'utf8'        -- Set UTF-8 encoding
-vim.opt.fileencoding = 'utf8'    -- Set UTF-8 file encoding
+vim.opt.number = true                    -- Show line numbers
+vim.opt.relativenumber = true           -- Show relative line numbers
+vim.opt.ruler = true                    -- Show cursor position
+vim.opt.showcmd = true                  -- Show incomplete commands
+vim.opt.wildmenu = true                 -- Enhanced command-line completion
+vim.opt.encoding = "utf8"               -- Set UTF-8 encoding
+vim.opt.fileencoding = "utf8"           -- Set UTF-8 file encoding
 
 -- Indentation Settings
 vim.opt.autoindent = true
@@ -20,18 +21,18 @@ vim.opt.smartindent = true
 vim.opt.smarttab = true
 
 -- Search Settings
-vim.opt.incsearch = true         -- Search as characters are entered
-vim.opt.hlsearch = true          -- Highlight matches
-vim.opt.ignorecase = true        -- Ignore case when searching
-vim.opt.smartcase = true         -- Override ignorecase if search pattern has upper case
+vim.opt.incsearch = true               -- Search as characters are entered
+vim.opt.hlsearch = true                -- Highlight matches
+vim.opt.ignorecase = true              -- Ignore case when searching
+vim.opt.smartcase = true               -- Override ignorecase if search pattern has upper case
 
 -- Visual Settings
-vim.opt.cursorline = true        -- Highlight current line
-vim.opt.cursorcolumn = true      -- Highlight current column
-vim.opt.showmatch = true         -- Highlight matching [{()}]
-vim.opt.colorcolumn = '80'       -- Show column at 80 characters
-vim.opt.laststatus = 2           -- Always show status line
-vim.opt.list = true              -- Show invisible characters
+vim.opt.cursorline = true              -- Highlight current line
+vim.opt.cursorcolumn = true            -- Highlight current column
+vim.opt.showmatch = true               -- Highlight matching [{()}]
+vim.opt.colorcolumn = "80"             -- Show column at 80 characters
+vim.opt.laststatus = 2                 -- Always show status line
+vim.opt.list = true                    -- Show invisible characters
 vim.opt.listchars = {
   tab = '→ ',
   space = '·',
@@ -40,6 +41,22 @@ vim.opt.listchars = {
   precedes = '«',
   extends = '»'
 }
+
+-- Functionality
+vim.opt.backspace = {'indent', 'eol', 'start'}  -- Make backspace work as expected
+vim.opt.hidden = true                  -- Allow hidden buffers
+vim.opt.history = 1000                 -- Store more history
+vim.opt.undolevels = 1000              -- More undo levels
+vim.opt.wildignore = {'*.swp', '*.bak', '*.pyc', '*.class'}
+vim.opt.title = true                   -- Change the terminal's title
+vim.opt.visualbell = true              -- Don't beep
+vim.opt.errorbells = false             -- Don't beep
+
+-- Color scheme settings
+vim.opt.background = "dark"
+if vim.fn.has('termguicolors') == 1 then
+  vim.opt.termguicolors = true
+end
 
 -- Trailing Space Highlighting
 vim.cmd([[
@@ -67,22 +84,6 @@ vim.api.nvim_create_autocmd({"BufWinLeave"}, {
   command = "call clearmatches()"
 })
 
--- Functionality
-vim.opt.backspace = {'indent', 'eol', 'start'}  -- Make backspace work as expected
-vim.opt.hidden = true                           -- Allow hidden buffers
-vim.opt.history = 1000                          -- Store more history
-vim.opt.undolevels = 1000                       -- More undo levels
-vim.opt.wildignore = {'*.swp', '*.bak', '*.pyc', '*.class'}
-vim.opt.title = true                            -- Change the terminal's title
-vim.opt.visualbell = true                       -- Don't beep
-vim.opt.errorbells = false                      -- Don't beep
-
--- Color scheme settings
-vim.opt.background = 'dark'
-if vim.fn.has('termguicolors') == 1 then
-  vim.opt.termguicolors = true
-end
-
 -- Nix-specific indentation settings
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "nix",
@@ -96,122 +97,3 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.cinoptions = "l1,t0,(0,W2s"
   end
 })
-
-The main changes:
-
-    Removed the vim.opt.compatible = false line (not valid in Neovim)
-    Commented out vim.cmd('syntax on') since syntax is enabled by default
-    No plugin manager or Tree-sitter configuration
-
-This should work without any network access or external dependencies. The Tree-sitter error you were seeing should be gone now.
-
-I have another config I would like to merge in to my existing config. Can you put the code that will work without having to talk to raw.github or use lazy?:
-
--- Set leader key early
-  vim.g.mapleader = " "
-  vim.g.maplocalleader = " "
-  -- Bootstrap lazy.nvim (safety check)
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-      "git",
-      "clone",
-      "--filter=blob:none",
-      "https://github.com/folke/lazy.nvim.git",
-      "--branch=stable",
-      lazypath,
-    })
-  end
-  vim.opt.rtp:prepend(lazypath)
-  -- Configure lazy.nvim with some basic plugins
-  require("lazy").setup({
-    -- Colorscheme
-    {
-      "ellisonleao/gruvbox.nvim",
-      priority = 1000,
-      config = function()
-        vim.cmd.colorscheme("gruvbox")
-      end,
-    },
-    -- File explorer
-    {
-      "nvim-tree/nvim-tree.lua",
-      dependencies = { "nvim-tree/nvim-web-devicons" },
-      config = function()
-        require("nvim-tree").setup()
-      end,
-    },
-    -- Status line
-    {
-      "nvim-lualine/lualine.nvim",
-      dependencies = { "nvim-tree/nvim-web-devicons" },
-      config = function()
-        require("lualine").setup()
-      end,
-    },
-    -- Syntax highlighting
-    {
-      "nvim-treesitter/nvim-treesitter",
-      build = ":TSUpdate",
-      config = function()
-        require("nvim-treesitter.configs").setup({
-          ensure_installed = { "lua", "vim", "vimdoc", "query", "python", "javascript" },
-          highlight = { enable = true },
-        })
-      end,
-    },
-  }) -- This closes the require("lazy").setup() call
-  -- Basic Settings (Converted from Vimscript to Lua)
-  vim.opt.number = true                    -- Show line numbers
-  vim.opt.relativenumber = true           -- Show relative line numbers
-  vim.opt.ruler = true                    -- Show cursor position
-  vim.opt.showcmd = true                  -- Show incomplete commands
-  vim.opt.wildmenu = true                 -- Enhanced command-line completion
-  vim.opt.encoding = "utf8"               -- Set UTF-8 encoding
-  vim.opt.fileencoding = "utf8"           -- Set UTF-8 file encoding
-  -- Indentation Settings
-  vim.opt.autoindent = true
-  vim.opt.shiftwidth = 2
-  vim.opt.tabstop = 2
-  vim.opt.expandtab = true
-  vim.opt.softtabstop = 2
-  vim.opt.smartindent = true
-  vim.opt.smarttab = true
-  -- Search Settings
-  vim.opt.incsearch = true               -- Search as characters are entered
-  vim.opt.hlsearch = true                -- Highlight matches
-  vim.opt.ignorecase = true              -- Ignore case when searching
-  vim.opt.smartcase = true               -- Override ignorecase if search pattern has upper case
-  -- Visual Settings
-  vim.opt.cursorline = true              -- Highlight current line
-  vim.opt.cursorcolumn = true            -- Highlight current column
-  vim.opt.showmatch = true               -- Highlight matching [{()}]
-  vim.opt.colorcolumn = "80"             -- Show column at 80 characters
-  vim.opt.laststatus = 2                 -- Always show status line
-  vim.opt.list = true                    -- Show invisible characters
-  vim.opt.listchars = "tab:→ ,space:·,nbsp:␣,trail:•,precedes:«,extends:»"
-  -- Functionality
-  vim.opt.backspace = "indent,eol,start" -- Make backspace work as expected
-  vim.opt.hidden = true                  -- Allow hidden buffers
-  vim.opt.history = 1000                 -- Store more history
-  vim.opt.undolevels = 1000              -- More undo levels
-  vim.opt.wildignore = "*.swp,*.bak,*.pyc,*.class"
-  vim.opt.title = true                   -- Change the terminal's title
-  vim.opt.visualbell = true              -- Don't beep
-  vim.opt.errorbells = false             -- Don't beep
-  -- Color scheme settings
-  vim.opt.background = "dark"
-  vim.opt.termguicolors = true
-  -- Trailing Space Highlighting (Lua equivalent)
-  vim.cmd([[
-    highlight ExtraWhitespace ctermbg=red guibg=red
-    match ExtraWhitespace /\s\+$/
-    autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-    autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-    autocmd BufWinLeave * call clearmatches()
-  ]])
-3:53 PM
-
-Here's the merged config with all the plugin/GitHub-dependent code removed:
-
