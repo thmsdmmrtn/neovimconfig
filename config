@@ -1,3 +1,31 @@
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Setup plugins
+require("lazy").setup({
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "lua", "vim", "vimdoc" },
+        highlight = { enable = true },
+      })
+    end,
+  },
+})
+
 -- Basic Settings
 vim.opt.compatible = false        -- Be iMproved, required
 vim.cmd('filetype off')          -- Required for plugin management
